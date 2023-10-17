@@ -3,25 +3,14 @@ const fs = require("fs");
 const morgan = require("morgan");
 
 const app = express();
-const TourRouter = require("./routes/Tours");
-const port = process.env.PORT || 5000;
+const TourRoutes = require("./routes/Tours");
+const UserRoutes = require("./routes/Users");
 
-//Middleware
 app.use(express.json());
-app.use((req, res, next) => {
-  console.log("Hello from MiddleWare");
-  next();
-});
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  next();
-});
-
 app.use(morgan("dev"));
 
 //Routes
-app.use("/api/v1/tours", TourRouter);
+app.use("/api/v1/tours", TourRoutes);
+app.use("/api/v1/users", UserRoutes);
 
-app.listen(port, () => {
-  console.log(`Running on ${port}`);
-});
+module.exports = app;
