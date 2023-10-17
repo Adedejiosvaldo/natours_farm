@@ -6,25 +6,18 @@ const { parse } = require("path");
 const TourRouter = require("./routes/Tours");
 const port = process.env.PORT || 5000;
 app.use(express.json());
+
+app.use((req, res, next) => {
+  console.log("Hello from MiddleWare");
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
 app.use("/api/v1/tours", TourRouter);
-
-
-
-// app.get("/api/v1/tours", (req, res) => {
-
-// });
-
-// app.post("/api/v1/tours", (req, res) => {
-
-// });
-
-// app.get("/api/v1/tours/:id", (req, res) => {
-
-// });
-
-// app.patch("/api/v1/:id", (req, res) => {
-
-// });
 
 app.listen(port, () => {
   console.log(`Running on ${port}`);
