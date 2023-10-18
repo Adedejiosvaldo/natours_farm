@@ -3,11 +3,11 @@ const fs = require("fs");
 const morgan = require("morgan");
 
 const app = express();
+app.use(morgan("dev"));
 const TourRoutes = require("./routes/Tours");
 const UserRoutes = require("./routes/Users");
 
 app.use(express.json());
-app.use(morgan("dev"));
 
 //Routes
 app.use("/api/v1/tours", TourRoutes);

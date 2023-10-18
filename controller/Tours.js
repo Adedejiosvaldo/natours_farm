@@ -4,6 +4,17 @@ const toursData = JSON.parse(
   fs.readFileSync("./dev-data/data/tours-simple.json")
 );
 
+const checkID = (req, res, next, val) => {
+  console.log(val);
+  if (req.params.id * 1 > toursData.length) {
+    return res.status(404).json({
+      status: "Fail",
+      message: "Invalid Id",
+    });
+  }
+  next();
+};
+
 const getAllTours = async (req, res) => {
   res.status(200).json({
     status: "success",
@@ -43,15 +54,6 @@ const getATour = async (req, res) => {
   //   console.log(id);
   const tour = toursData.find((el) => el.id === parseInt(id));
 
-  if (!tour) {
-    return res.status(400).json({
-      staus: "Error",
-      data: {
-        message: "ID does not exist",
-      },
-    });
-  }
-
   res.status(200).json({
     status: "success",
     data: {
@@ -65,18 +67,15 @@ const updateTour = async (req, res) => {
     params: { id },
     body,
   } = req;
-  c;
 
   const tour = toursData.find((el) => el.id === parseInt(id));
 
-  if (!tour) {
-    return res.status(400).json({
-      staus: "Error",
-      data: {
-        message: "ID does not exist",
-      },
-    });
-  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      tour: tour,
+    },
+  });
 };
 
-module.exports = { getATour, getAllTours, createTour, updateTour };
+module.exports = { getATour, getAllTours, createTour, updateTour, checkID };
