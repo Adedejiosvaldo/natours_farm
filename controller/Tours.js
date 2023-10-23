@@ -1,22 +1,20 @@
 const Tours = require('../model/Tours');
 
-//Middlewares
-
-const checkReqBody = (req, res, next) => {
-  const { name, price } = req.body;
-  if (!name || !price) {
-    return res.status(404).json({
-      status: 'Fail',
-      message: 'Missing Name and Price',
-    });
-  }
-  next();
-};
-
 //Controllers
 const getAllTours = async (req, res) => {};
 
-const createTour = async (req, res) => {};
+const createTour = async (req, res) => {
+  try {
+    const newTour = await Tours.create(req.body);
+
+    res.status(200).json({
+      status: 'sucess',
+      tour: newTour,
+    });
+  } catch (error) {
+    res.status(400).json({ status: 'Failure', msg: error.message });
+  }
+};
 
 const getATour = async (req, res) => {
   const { id } = req.params;
@@ -29,6 +27,4 @@ module.exports = {
   getAllTours,
   createTour,
   updateTour,
-
-  checkReqBody,
 };
