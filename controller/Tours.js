@@ -9,8 +9,16 @@ const getAllTours = async (req, res) => {
 
     // const allTours = await Tours.find().where('duration').equals(5);
 
+    //Adavnced Filter
+    let queryString = JSON.stringify(queryObj);
+    queryString = queryString.replace(
+      /\b(gt|gte|lt|lte)/g,
+      (match) => `$${match}`,
+    );
+    queryString = JSON.parse(queryString);
+
     //  Building The Query
-    const query = Tours.find(queryObj);
+    const query = Tours.find(queryString);
 
     //Executing the query
     const allTours = await query;
