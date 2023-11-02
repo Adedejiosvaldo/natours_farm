@@ -158,16 +158,6 @@ const getTourStats = async (req, res) => {
       {
         $sort: { avgPrice: 1 },
       },
-
-      //Adding more conditoons
-
-      {
-        //Selects documents that
-        // meets the specified condition
-        // $match: {
-        //   _id: { $ne: 'EASY' },
-        // },
-      },
     ]);
 
     res.status(200).json({
@@ -177,7 +167,69 @@ const getTourStats = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(404).json({ status: 'Sucess' });
+    return res
+      .status(404)
+      .json({ status: 'Request Failed', msg: error.message });
+  }
+};
+
+const getMonthlyPlan = async (req, res) => {
+  try {
+    console.log(req.params);
+    const year = req.params.year * 1;
+
+    const plan = await Tours.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numberTourStarts: { $sum: 1 },
+          tours: { $push: '$name' },
+        },
+      },
+
+      {
+        $addFields: {
+          month: '$_id',
+        },
+      },
+
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+      {
+        $sort: {
+          numberTourStarts: -1,
+        },
+      },
+      {
+        $limit: 12,
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        plan,
+      },
+    });
+  } catch (error) {
+    return res
+      .status(404)
+      .json({ status: 'Request Failed', msg: error.message });
   }
 };
 
@@ -190,4 +242,5 @@ module.exports = {
   //   Other ROutes
   aliasTopTours,
   getTourStats,
+  getMonthlyPlan,
 };
