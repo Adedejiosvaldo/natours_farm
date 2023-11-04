@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const TourSchema = mongoose.Schema(
   {
@@ -8,6 +9,7 @@ const TourSchema = mongoose.Schema(
       unique: true,
       trim: true,
     },
+    slug: String,
 
     duration: {
       type: Number,
@@ -76,4 +78,8 @@ TourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+TourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
 module.exports = mongoose.model('Tours', TourSchema);
