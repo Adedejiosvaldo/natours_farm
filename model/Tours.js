@@ -68,18 +68,40 @@ const TourSchema = mongoose.Schema(
 
     //Array of date - Difrent dates of tours
     startDates: [Date],
+    secretTour: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   },
 );
+
+// Virtual Properties
 TourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// Pre - Document Middleware
 TourSchema.pre('save', function (next) {
+  this.secretTour = true;
   this.slug = slugify(this.name, { lower: true });
+  console.log(this);
   next();
 });
+
+// POST - Document Middleware
+// TourSchema.post('save', function (next, doc) {});
+
+//Query Middleware
+// Pre - Query Middleware
+TourSchema.pre('/^find/', function (next) {
+  this.find({ secretTour: { $ne: true } });
+  next();
+});
+
+// Post - Query Middleware
+TourSchema.post('/^find/', function (docs, next) {});
 module.exports = mongoose.model('Tours', TourSchema);
