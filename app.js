@@ -7,6 +7,8 @@ const app = express();
 
 const TourRoutes = require('./routes/Tours');
 const UserRoutes = require('./routes/Users');
+const AppError = require('./utils/appError');
+const errorController = require('./controller/errorController');
 
 //Middlewares
 if (process.env.NODE_ENV === 'development') {
@@ -27,21 +29,13 @@ app.all('*', (req, res, next) => {
   //     message: `Can't find ${req.originalUrl} on this server`,
   //   });
 
-  const err = new Error(`Can't find ${req.originalUrl} on this server`);
-  err.statusCode = 404;
-  err.status = 'fail';
+  //   const err = new Error(`Can't find ${req.originalUrl} on this server`);
+  //   err.statusCode = 404;
+  //   err.status = 'fail';
 
-  next(err);
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
-app.use((err, req, res, next) => {
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || 'fail';
-
-  res.status(err.statusCode).json({
-    status: err.status,
-    message: err.message,
-  });
-});
+app.use(errorController);
 
 module.exports = app;
