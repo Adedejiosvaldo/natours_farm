@@ -1,5 +1,6 @@
 const Tours = require('../model/Tours');
 const APIFeatures = require('../utils/apiFeatures');
+const AppError = require('../utils/appError');
 const catchAsyncErrors = require('../utils/catchAsync');
 
 //Controllers
@@ -22,7 +23,7 @@ const getAllTours = catchAsyncErrors(async (req, res, next) => {
 
   //Send back response
   res.status(200).json({
-    status: 'Sucess',
+    status: 'Success',
     noOfTours: allTours.length,
     data: {
       allTours,
@@ -34,7 +35,7 @@ const createTour = catchAsyncErrors(async (req, res, next) => {
   const newTour = await Tours.create(req.body);
 
   res.status(200).json({
-    status: 'sucess',
+    status: 'Success',
     tour: newTour,
   });
 });
@@ -42,21 +43,35 @@ const createTour = catchAsyncErrors(async (req, res, next) => {
 const getATour = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
   const Tour = await Tours.findById(id);
-  res.status(200).json({ status: 'Sucess', data: Tour });
+
+  if (!Tour) {
+    // res.status(404).json({ status: 'Success', data: 'No Tour Found' });
+    return next(new AppError('No Tour found with that id', 404));
+  }
+  res.status(200).json({ status: 'Success', data: Tour });
 });
 
-const updateTour = catchAsyncErrors(async (req, res) => {
+const updateTour = catchAsyncErrors(async (req, res, next) => {
   const tour = await Tours.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     //   runValidators: true,
   });
 
+  if (!tour) {
+    // res.status(404).json({ status: 'Sucess', data: 'No Tour Found' });
+    return next(new AppError('No Tour found with that id', 404));
+  }
   res.status(200).json({ status: 'Success', data: { tour } });
 });
 
 const deleteTour = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
   const tour = await Tours.findByIdAndDelete(id);
+
+  if (!tour) {
+    // res.status(404).json({ status: 'Sucess', data: 'No Tour Found' });
+    return next(new AppError('No Tour found with that id', 404));
+  }
   res.status(200).json({
     status: 'Success',
     msg: `Successfully deleted tour with ID ${id}`,
