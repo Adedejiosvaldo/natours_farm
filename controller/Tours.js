@@ -54,7 +54,7 @@ const getATour = catchAsyncErrors(async (req, res, next) => {
 const updateTour = catchAsyncErrors(async (req, res, next) => {
   const tour = await Tours.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
-    //   runValidators: true,
+    runValidators: true,
   });
 
   if (!tour) {
