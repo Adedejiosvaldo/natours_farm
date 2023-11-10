@@ -5,6 +5,11 @@ const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}`;
   return new AppError(message, 400);
 };
+const handleDuplicateErrorDB = (err) => {
+  const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
+  const message = `Duplicate Field Value: ${value}. Please use another value`;
+  return new AppError(message, 400);
+};
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -25,16 +30,12 @@ const sendErrorProd = (err, res) => {
   }
   //   Unknown error : Do not leak errors
   else {
-    //   1) Log errors
-    console.error('Error', err);
-    // 2) Send generic errors
     res.status(500).json({
       status: 'error',
       message: 'Something went wrong',
     });
   }
 };
-// };
 
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
@@ -46,9 +47,10 @@ module.exports = (err, req, res, next) => {
   } else if (process.env.NODE_ENV === 'production') {
     // console.log('object');
     //This was the line that was giving me issues
-    let error = { ...err, message: err.message, name: err.name };
+    let error = Object.create(err);
 
     if (error.name === 'CastError') error = handleCastErrorDB(error);
+    if (error.code === 11000) error = handleDuplicateErrorDB(error);
     // console.log(error);
     sendErrorProd(error, res);
   }
