@@ -17,12 +17,12 @@ const UserSchema = mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Please provide email'],
+    required: [true, 'Please provide password'],
     minlength: [8, 'Minimum length of 8'],
   },
   confirmPassword: {
     type: String,
-    required: [true, 'Please provide email'],
+    required: [true, 'Kindly Confirm Password'],
     minlength: [8, 'Minimum length of 8'],
   },
 });
