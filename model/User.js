@@ -5,6 +5,7 @@ const UserSchema = mongoose.Schema({
     type: String,
     required: [true, 'Name is required'],
   },
+
   email: {
     type: String,
     required: [true, 'Please provide email'],
@@ -12,18 +13,27 @@ const UserSchema = mongoose.Schema({
     lowercase: true,
     validate: [validator.isEmail, 'Incorrect email : Enter Correct EMail'],
   },
+
   photoUrl: {
     type: String,
   },
+
   password: {
     type: String,
     required: [true, 'Please provide password'],
     minlength: [8, 'Minimum length of 8'],
   },
+
   confirmPassword: {
     type: String,
     required: [true, 'Kindly Confirm Password'],
     minlength: [8, 'Minimum length of 8'],
+    validate: {
+      validator: function (el) {
+        return el === this.password;
+      },
+      message: 'Password do not match - ({VALUE})',
+    },
   },
 });
 
