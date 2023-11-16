@@ -1,6 +1,14 @@
 const User = require('../model/User');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const catchAsyncErrors = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
+
+const signToken = (userId) =>
+  jwt.sign({ id: userId._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRY_DATE,
+  });
+
 const signUp = catchAsyncErrors(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -9,9 +17,7 @@ const signUp = catchAsyncErrors(async (req, res, next) => {
     confirmPassword: req.body.confirmPassword,
   });
 
-  const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRY_DATE,
-  });
+  const token = signToken(newUser._id);
 
   res.status(201).json({
     status: 'sucess',
@@ -22,4 +28,24 @@ const signUp = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-module.exports = { signUp };
+const login = catchAsyncErrors(async (req, res, next) => {
+  const { email, password } = req.body;
+  // C
+  if (!email || !password) {
+    return next(new AppError('No email or password', 400));
+  }
+
+  const user = await User.findOne({ email: email }).select('+password');
+
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError('Incorrect email or password', 401));
+  }
+
+  const token = signToken(user._id);
+  res.status(200).json({
+    status: 'success',
+    token,
+  });
+});
+
+module.exports = { signUp, login };
