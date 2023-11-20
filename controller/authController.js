@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const catchAsyncErrors = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const { promisify } = require('util');
 
 const signToken = (userId) =>
   jwt.sign({ id: userId._id }, process.env.JWT_SECRET, {
@@ -15,6 +16,7 @@ const signUp = catchAsyncErrors(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
+    // passwordChangedAt: req.body.passwordChangedAt,
   });
 
   const token = signToken(newUser._id);
@@ -64,6 +66,20 @@ const protectMiddleWare = catchAsyncErrors(async (req, res, next) => {
     );
   }
 
+  // 2) Verification of Token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  //   3). Check if user still exist
+  const freshUser = await User.findById(decoded.id);
+
+  if (!freshUser) {
+    return next(
+      new AppError('The user belonging to the token no longer exist', 401),
+    );
+  }
+  //   4) Check  if user changed password after token was issued
+  const changedPassword = await freshUser.changedPasswordAfter(decoded.iat);
+  console.log(changedPassword);
   next();
 });
 

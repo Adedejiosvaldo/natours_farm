@@ -26,6 +26,8 @@ const UserSchema = mongoose.Schema({
     select: false,
   },
 
+  passwordChangedAt: Date,
+
   confirmPassword: {
     type: String,
     required: [true, 'Kindly Confirm Password'],
@@ -40,10 +42,15 @@ const UserSchema = mongoose.Schema({
   },
 });
 
+UserSchema.pre('save', function (next) {
+  console.log(this.passWordChangedAt);
+  next();
+});
+
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
-  //hash password with cpst of 12
+  //hash password with cost of 12
   this.password = await bcrypt.hash(this.password, 12);
 
   //Remove the confirm password
@@ -56,6 +63,13 @@ UserSchema.methods.correctPassword = async function (
   userPassword,
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+UserSchema.methods.changedPasswordAfter = function (JWT_timeStamp) {
+  if (this.passWordChangedAt) {
+    console.log(this.passwordChangedAt, JWT_timeStamp);
+  }
+
+  return false;
 };
 
 module.exports = mongoose.model('User', UserSchema);
