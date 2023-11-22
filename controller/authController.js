@@ -16,7 +16,7 @@ const signUp = catchAsyncErrors(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
-    // passwordChangedAt: req.body.passwordChangedAt,
+    passwordChangedAt: Date.now(),
   });
 
   const token = signToken(newUser._id);
@@ -70,16 +70,23 @@ const protectMiddleWare = catchAsyncErrors(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   //   3). Check if user still exist
-  const freshUser = await User.findById(decoded.id);
+  const currentUser = await User.findById(decoded.id);
 
-  if (!freshUser) {
+  if (!currentUser) {
     return next(
       new AppError('The user belonging to the token no longer exist', 401),
     );
   }
   //   4) Check  if user changed password after token was issued
-  const changedPassword = await freshUser.changedPasswordAfter(decoded.iat);
-  console.log(changedPassword);
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError('User Recently Changed Password,PLease Login again', 401),
+    );
+  }
+
+  //   Grant access to the protected route
+
+  req.user = currentUser;
   next();
 });
 
