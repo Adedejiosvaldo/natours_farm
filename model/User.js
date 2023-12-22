@@ -18,6 +18,13 @@ const UserSchema = mongoose.Schema({
   photoUrl: {
     type: String,
   },
+  roles: {
+    type: String,
+    enum: {
+      values: ['user', 'admin', 'guide', 'lead-guide'],
+      message: 'Difficulty can either be : user,admin, guide,lead-guide',
+    },
+  },
 
   password: {
     type: String,
@@ -59,13 +66,12 @@ UserSchema.methods.correctPassword = async function (
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
-UserSchema.methods.changedPasswordAfter = async function (JWTtimeStanp) {
+UserSchema.methods.changedPasswordAfter = function (JWTtimeStanp) {
   if (this.passwordChangedAt) {
     const changedTimeStamp = parseInt(
       this.passwordChangedAt.getTime() / 1000,
       10,
     );
-    console.log(changedTimeStamp, JWTtimeStanp);
     return JWTtimeStanp < changedTimeStamp;
   }
   // JWT Token is less than the changedTimeStamp

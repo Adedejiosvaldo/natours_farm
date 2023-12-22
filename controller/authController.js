@@ -7,7 +7,7 @@ const { promisify } = require('util');
 
 const signToken = (userId) =>
   jwt.sign({ id: userId._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRY_DATE,
+    expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
 const signUp = catchAsyncErrors(async (req, res, next) => {
@@ -16,6 +16,7 @@ const signUp = catchAsyncErrors(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
+    roles: req.body.roles,
     passwordChangedAt: Date.now(),
   });
 
@@ -90,4 +91,17 @@ const protectMiddleWare = catchAsyncErrors(async (req, res, next) => {
   next();
 });
 
-module.exports = { signUp, login, protectMiddleWare };
+const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.roles)) {
+      return next(
+        new AppError(
+          'You do not have permission to perfom this operation',
+          403,
+        ),
+      );
+    }
+    next();
+  };
+};
+module.exports = { signUp, login, protectMiddleWare, restrictTo };
