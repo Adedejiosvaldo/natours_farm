@@ -84,9 +84,7 @@ const protectMiddleWare = catchAsyncErrors(async (req, res, next) => {
       new AppError('User Recently Changed Password,PLease Login again', 401),
     );
   }
-
   //   Grant access to the protected route
-
   req.user = currentUser;
   next();
 });
@@ -104,4 +102,27 @@ const restrictTo = (...roles) => {
     next();
   };
 };
-module.exports = { signUp, login, protectMiddleWare, restrictTo };
+
+const forgotPassword = catchAsyncErrors(async (req, res, next) => {
+  // 1) Get the user based on the email Posted
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return next(new AppError('No user Found', 404));
+  }
+  // 2) Generate Random reset Token
+  const resetToken = user.createPasswordResetToken();
+
+  // Saving it
+  await user.save({ validateBeforeSave: false });
+  // 3) Send it to the user email
+});
+const resetPassword = catchAsyncErrors(async (req, res, next) => {});
+module.exports = {
+  signUp,
+  login,
+  protectMiddleWare,
+  restrictTo,
+  forgotPassword,
+  resetPassword,
+};
