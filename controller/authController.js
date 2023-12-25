@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const catchAsyncErrors = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { promisify } = require('util');
+const sendEmail = require('../utils/emailHandler');
 
 const signToken = (userId) =>
   jwt.sign({ id: userId._id }, process.env.JWT_SECRET, {
@@ -116,6 +117,30 @@ const forgotPassword = catchAsyncErrors(async (req, res, next) => {
   // Saving it
   await user.save({ validateBeforeSave: false });
   // 3) Send it to the user email
+  const resetURL = `${req.protocol}://${req.get(
+    'host',
+  )}/api/v1/users/resetPassword/${resetToken}`;
+
+  const message = `Forgot your password? Submit a request with your new password and confirm it to : ${resetURL}. \n If you didnt forget your password. Ignore this email`;
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Your Password Reset Token (Valid for 10 min)',
+      message,
+    });
+    console.log('Here');
+    res
+      .status(200)
+      .json({
+        status: 'success',
+        message: 'Token Send to email- Kindly check your email',
+      });
+  } catch (error) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(new AppError('There was an error sending email', 500));
+  }
 });
 const resetPassword = catchAsyncErrors(async (req, res, next) => {});
 module.exports = {
