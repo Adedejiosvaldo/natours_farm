@@ -34,7 +34,11 @@ const UserSchema = mongoose.Schema({
     minlength: [8, 'Minimum length of 8'],
     select: false,
   },
-
+  active: {
+    default: true,
+    type: Boolean,
+    select: false,
+  },
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
@@ -70,6 +74,11 @@ UserSchema.pre('save', function (next) {
     return next();
   }
   this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+UserSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 

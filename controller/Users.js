@@ -24,7 +24,6 @@ const getAllUsers = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-
     result: users.length,
     data: {
       users,
@@ -39,7 +38,6 @@ const updateMe = catchAsyncErrors(async (req, res, next) => {
   }
 
   // 2. Update user document
-
   const filteredBody = filteredObject(req.body, 'name', 'email');
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
@@ -54,27 +52,14 @@ const updateMe = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-const createUser = async (req, res) => {
-  const newId = UsersData[UsersData.length - 1].id + 1;
-  const newUser = Object.assign({ id: newId }, req.body);
+const deleteMe = catchAsyncErrors(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
 
-  //Push
-  UsersData.push(newTour);
-
-  //Write updated File
-  fs.writeFile(
-    `./dev-data/data/tours-simple.json`,
-    JSON.stringify(UsersData),
-    (err) => {
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newUser,
-        },
-      });
-    },
-  );
-};
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+});
 
 const getAUser = async (req, res) => {
   const { id } = req.params;
@@ -123,8 +108,9 @@ const deleteUser = async (req, res) => {};
 module.exports = {
   getAUser,
   getAllUsers,
-  createUser,
+
   updateUser,
   updateMe,
   deleteUser,
+  deleteMe,
 };
