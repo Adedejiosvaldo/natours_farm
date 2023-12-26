@@ -11,6 +11,8 @@ const {
   login,
   forgotPassword,
   resetPassword,
+  updatePassword,
+  protectMiddleWare,
 } = require('../controller/authController');
 
 const router = express.Router();
@@ -21,6 +23,7 @@ router.post('/login', login);
 
 // Forgot and Reset Functionalities route
 router.post('/forgotPassword', forgotPassword);
+router.patch('/updatePassword', protectMiddleWare, updatePassword);
 router.patch('/resetPassword/:token', resetPassword);
 
 //User ROute

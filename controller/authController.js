@@ -11,6 +11,18 @@ const signToken = (userId) =>
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+
+  res.status(statusCode).json({
+    status: 'sucess',
+    token,
+    data: {
+      user: user,
+    },
+  });
+};
+
 const signUp = catchAsyncErrors(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -175,6 +187,30 @@ const resetPassword = catchAsyncErrors(async (req, res, next) => {
     token,
   });
 });
+
+const updatePassword = catchAsyncErrors(async (req, res, next) => {
+  // 1. Get User
+  const user = await User.findById(req.user.id).select('+password');
+
+  // 2. Check if posted password is correct
+
+  const doPasswordMatch = await user.correctPassword(
+    req.body.oldPassword,
+    user.password,
+  );
+  console.log(doPasswordMatch);
+  if (!doPasswordMatch) {
+    return next(new AppError('Invalid Password', 401));
+  }
+  // 3. If true, Update password
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+
+  await user.save();
+  // 4.  Log User in
+  createSendToken(user, 200, res);
+});
+
 module.exports = {
   signUp,
   login,
@@ -182,4 +218,5 @@ module.exports = {
   restrictTo,
   forgotPassword,
   resetPassword,
+  updatePassword,
 };
