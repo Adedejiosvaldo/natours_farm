@@ -21,7 +21,7 @@ router.post('/login', login);
 
 // Forgot and Reset Functionalities route
 router.post('/forgotPassword', forgotPassword);
-router.patch('/resetPassword', resetPassword);
+router.patch('/resetPassword/:token', resetPassword);
 
 //User ROute
 

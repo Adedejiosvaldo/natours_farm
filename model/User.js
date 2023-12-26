@@ -53,6 +53,7 @@ const UserSchema = mongoose.Schema({
   },
 });
 
+// Middleware
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
@@ -64,6 +65,15 @@ UserSchema.pre('save', async function (next) {
   next();
 });
 
+UserSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) {
+    return next();
+  }
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+//Methods
 UserSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword,

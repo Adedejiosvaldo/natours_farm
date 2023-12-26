@@ -5,7 +5,7 @@ const catchAsyncErrors = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const { promisify } = require('util');
 const sendEmail = require('../utils/emailHandler');
-
+const crypto = require('crypto');
 const signToken = (userId) =>
   jwt.sign({ id: userId._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
@@ -129,12 +129,10 @@ const forgotPassword = catchAsyncErrors(async (req, res, next) => {
       message,
     });
     console.log('Here');
-    res
-      .status(200)
-      .json({
-        status: 'success',
-        message: 'Token Send to email- Kindly check your email',
-      });
+    res.status(200).json({
+      status: 'success',
+      message: 'Token Send to email- Kindly check your email',
+    });
   } catch (error) {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
@@ -142,7 +140,41 @@ const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     return next(new AppError('There was an error sending email', 500));
   }
 });
-const resetPassword = catchAsyncErrors(async (req, res, next) => {});
+
+const resetPassword = catchAsyncErrors(async (req, res, next) => {
+  // 1. Get user based on token.
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  // 2 If token has not expired and there is a user, set the new password
+  if (!user) {
+    return next(new AppError('Token is invalid or has expired', 400));
+  }
+
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+
+  // 3 Update changedPasswordAt
+
+  // 4. Log the user in and send jwt
+
+  const token = signToken(user._id);
+
+  res.status(201).json({
+    status: 'sucess',
+    token,
+  });
+});
 module.exports = {
   signUp,
   login,
