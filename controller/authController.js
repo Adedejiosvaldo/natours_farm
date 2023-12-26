@@ -198,7 +198,6 @@ const updatePassword = catchAsyncErrors(async (req, res, next) => {
     req.body.oldPassword,
     user.password,
   );
-  console.log(doPasswordMatch);
   if (!doPasswordMatch) {
     return next(new AppError('Invalid Password', 401));
   }
