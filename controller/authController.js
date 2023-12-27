@@ -13,6 +13,21 @@ const signToken = (userId) =>
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      new Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
+    ),
+    httpOnly: true,
+  };
+
+  user.password = undefined;
+
+  console.log(cookieOptions.expires);
+  if (process.env.NODE_ENV === 'prodcution') {
+    cookieOptions.secure = true;
+  }
+
+  res.cookie('jwt', token, cookieOptions);
 
   res.status(statusCode).json({
     status: 'sucess',
@@ -33,15 +48,7 @@ const signUp = catchAsyncErrors(async (req, res, next) => {
     passwordChangedAt: Date.now(),
   });
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({
-    status: 'sucess',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createSendToken(newUser, 201, res);
 });
 
 const login = catchAsyncErrors(async (req, res, next) => {
@@ -58,10 +65,12 @@ const login = catchAsyncErrors(async (req, res, next) => {
   }
 
   const token = signToken(user._id);
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  //   res.status(200).json({
+  //     status: 'success',
+  //     token,
+  //   });
+
+  createSendToken(200, res);
 });
 
 const protectMiddleWare = catchAsyncErrors(async (req, res, next) => {
