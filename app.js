@@ -6,7 +6,7 @@ dotenv.config({ path: './config.env' });
 const rateLimiter = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
-
+const hpp = require('hpp');
 const app = express();
 const TourRoutes = require('./routes/Tours');
 const UserRoutes = require('./routes/Users');
@@ -36,6 +36,20 @@ app.use(mongoSanitize());
 
 // Data Sanitization against XSS - clean user input from malicious html code
 app.use(xss());
+
+// Prevent Parameter Polution
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'sort',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'difficulty',
+      'price',
+    ],
+  }),
+);
 
 // Serving Static Files
 app.use(express.static(`${__dirname}/public`));
