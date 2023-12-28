@@ -3,13 +3,15 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const helmet = require('helmet');
 dotenv.config({ path: './config.env' });
-const app = express();
+const rateLimiter = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 
+const app = express();
 const TourRoutes = require('./routes/Tours');
 const UserRoutes = require('./routes/Users');
 const AppError = require('./utils/appError');
 const errorController = require('./controller/errorController');
-const rateLimiter = require('express-rate-limit');
 
 //Middlewares
 //  Set Security HTTP Headers
@@ -28,6 +30,12 @@ app.use('/api', limiter);
 
 // Body Parser - Reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+
+// Data Sanitization against NoSQL query Injection
+app.use(mongoSanitize());
+
+// Data Sanitization against XSS - clean user input from malicious html code
+app.use(xss());
 
 // Serving Static Files
 app.use(express.static(`${__dirname}/public`));
