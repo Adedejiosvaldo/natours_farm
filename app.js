@@ -14,9 +14,11 @@ const AppError = require('./utils/appError');
 const errorController = require('./controller/errorController');
 
 //Middlewares
+
 //  Set Security HTTP Headers
 app.use(helmet());
-// Development logginf
+
+// Development logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }

@@ -8,9 +8,7 @@ const Tours = require('../../model/Tours');
 const DB = process.env.DATABASE_URL.replace('<Password>', process.env.PASSWORD);
 connectDB(DB);
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8'),
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 // IMport Data into DB
 const importData = async () => {
