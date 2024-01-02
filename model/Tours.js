@@ -139,15 +139,6 @@ TourSchema.pre('save', function (next) {
 //   next();
 // });
 
-//Code from Issue -Git
-// TourSchema.pre('save', async function (next) {
-//   console.log(this.guides); // undefined
-//   this.guides = this.guides || []; // Initialize guides as an empty array if undefined
-//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
-//   this.guides = await Promise.all(guidesPromises);
-//   next();
-// });
-
 // POST - Document Middleware
 // TourSchema.post('save', function (next, doc) {});
 
@@ -155,6 +146,14 @@ TourSchema.pre('save', function (next) {
 // Pre - Query Middleware
 TourSchema.pre('/^find/', function (next) {
   this.find({ secretTour: { $ne: true } });
+  next();
+});
+
+TourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
   next();
 });
 
