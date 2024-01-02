@@ -23,8 +23,7 @@ const createSendToken = (user, statusCode, res) => {
 
   user.password = undefined;
 
-  console.log(cookieOptions.expires);
-  if (process.env.NODE_ENV === 'prodcution') {
+  if (process.env.NODE_ENV === 'production') {
     cookieOptions.secure = true;
   }
 
@@ -117,7 +116,7 @@ const restrictTo = (...roles) => {
     if (!roles.includes(req.user.roles)) {
       return next(
         new AppError(
-          'You do not have permission to perfom this operation',
+          'You do not have permission to perform this operation',
           403,
         ),
       );
@@ -143,7 +142,7 @@ const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     'host',
   )}/api/v1/users/resetPassword/${resetToken}`;
 
-  const message = `Forgot your password? Submit a request with your new password and confirm it to : ${resetURL}. \n If you didnt forget your password. Ignore this email`;
+  const message = `Forgot your password? Submit a request with your new password and confirm it to : ${resetURL}. \n If you didn't forget your password. Ignore this email`;
   try {
     await sendEmail({
       email: user.email,

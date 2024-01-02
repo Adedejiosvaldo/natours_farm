@@ -16,13 +16,13 @@ reviewSchema = mongoose.Schema(
       type: Date,
       default: Date.now(),
     },
-    refToTour: {
+    tour: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Tours',
       required: [true, 'Review must belong to a tour'],
     },
 
-    refToUser: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'Review can only be made by user'],

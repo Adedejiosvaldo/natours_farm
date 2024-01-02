@@ -10,8 +10,10 @@ const hpp = require('hpp');
 const app = express();
 const TourRoutes = require('./routes/Tours');
 const UserRoutes = require('./routes/Users');
+
 const AppError = require('./utils/appError');
 const errorController = require('./controller/errorController');
+const ReviewRoutes = require('./routes/Reviews');
 
 //Middlewares
 
@@ -39,7 +41,7 @@ app.use(mongoSanitize());
 // Data Sanitization against XSS - clean user input from malicious html code
 app.use(xss());
 
-// Prevent Parameter Polution
+// Prevent Parameter Pollution
 app.use(
   hpp({
     whitelist: [
@@ -59,6 +61,7 @@ app.use(express.static(`${__dirname}/public`));
 //Routes
 app.use('/api/v1/tours', TourRoutes);
 app.use('/api/v1/users', UserRoutes);
+app.use('/api/v1/reviews', ReviewRoutes);
 
 //not found
 app.all('*', (req, res, next) => {
