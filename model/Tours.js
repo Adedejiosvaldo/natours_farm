@@ -67,7 +67,7 @@ const TourSchema = mongoose.Schema(
 
     imageCover: {
       type: String,
-      required: [true, 'Tour must have civer image'],
+      required: [true, 'Tour must have cover image'],
     },
 
     //Array of images - Array of strings
@@ -144,7 +144,7 @@ TourSchema.pre('save', function (next) {
 
 //Query Middleware
 // Pre - Query Middleware
-TourSchema.pre('/^find/', function (next) {
+TourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
   next();
 });
@@ -158,7 +158,7 @@ TourSchema.pre(/^find/, function (next) {
 });
 
 // Post - Query Middleware
-TourSchema.post('/^find/', function (docs, next) {});
+// TourSchema.post('/^find/', function (docs, next) {});
 
 // Aggregation MiddleWare
 

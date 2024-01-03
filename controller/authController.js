@@ -23,8 +23,7 @@ const createSendToken = (user, statusCode, res) => {
 
   user.password = undefined;
 
-  console.log(cookieOptions.expires);
-  if (process.env.NODE_ENV === 'prodcution') {
+  if (process.env.NODE_ENV === 'production') {
     cookieOptions.secure = true;
   }
 
@@ -65,13 +64,13 @@ const login = catchAsyncErrors(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
 
-  const token = signToken(user._id);
+  //   const token = signToken(user._id);
   //   res.status(200).json({
   //     status: 'success',
   //     token,
   //   });
 
-  createSendToken(200, res);
+  createSendToken(user, 200, res);
 });
 
 const protectMiddleWare = catchAsyncErrors(async (req, res, next) => {
@@ -112,19 +111,19 @@ const protectMiddleWare = catchAsyncErrors(async (req, res, next) => {
   next();
 });
 
-const restrictTo = (...roles) => {
-  return (req, res, next) => {
+const restrictTo =
+  (...roles) =>
+  (req, res, next) => {
     if (!roles.includes(req.user.roles)) {
       return next(
         new AppError(
-          'You do not have permission to perfom this operation',
+          'You do not have permission to perform this operation',
           403,
         ),
       );
     }
     next();
   };
-};
 
 const forgotPassword = catchAsyncErrors(async (req, res, next) => {
   // 1) Get the user based on the email Posted
@@ -143,7 +142,7 @@ const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     'host',
   )}/api/v1/users/resetPassword/${resetToken}`;
 
-  const message = `Forgot your password? Submit a request with your new password and confirm it to : ${resetURL}. \n If you didnt forget your password. Ignore this email`;
+  const message = `Forgot your password? Submit a request with your new password and confirm it to : ${resetURL}. \n If you didn't forget your password. Ignore this email`;
   try {
     await sendEmail({
       email: user.email,

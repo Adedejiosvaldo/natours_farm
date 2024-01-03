@@ -1,4 +1,5 @@
-const Tours = require('../model/Tours');
+// eslint-disable-next-line import/extensions
+const Tours = require('../model/Tours.js');
 const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
 const catchAsyncErrors = require('../utils/catchAsync');
@@ -20,7 +21,7 @@ const getAllTours = catchAsyncErrors(async (req, res, next) => {
     .Pagination();
   //   await the query - response
   const allTours = await features.query;
-
+  console.log(allTours);
   //Send back response
   res.status(200).json({
     status: 'Success',
@@ -29,6 +30,15 @@ const getAllTours = catchAsyncErrors(async (req, res, next) => {
       allTours,
     },
   });
+
+  //   const tour = await Tours.find();
+  //   res.status(200).json({
+  //     status: 'Success',
+  //     noOfTours: tour.length,
+  //     data: {
+  //       tour,
+  //     },
+  //   });
 });
 
 const createTour = catchAsyncErrors(async (req, res, next) => {

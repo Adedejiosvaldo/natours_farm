@@ -65,7 +65,7 @@ const getAUser = async (req, res) => {
   const { id } = req.params;
 
   //   console.log(id);
-  const user = UsersData.find((el) => el.id === parseInt(id));
+  const user = await User.findById(id);
 
   if (!user) {
     return res.status(400).json({
