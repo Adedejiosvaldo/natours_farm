@@ -22,7 +22,7 @@ router.route('/monthly-plan/:year').get(getMonthlyPlan);
 
 router.route('/tour-stats').get(getTourStats);
 
-router.route('/').get(protectMiddleWare, getAllTours).post(createTour);
+router.route('/').get(getAllTours).post(createTour);
 router
   .route('/:id')
   .get(getATour)

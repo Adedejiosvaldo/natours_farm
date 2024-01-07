@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
 
-const TourSchema = mongoose.Schema(
+const tourSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -118,12 +118,12 @@ const TourSchema = mongoose.Schema(
 );
 
 // Virtual Properties
-TourSchema.virtual('durationWeeks').get(function () {
+tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
 // Pre - Document Middleware
-TourSchema.pre('save', function (next) {
+tourSchema.pre('save', function (next) {
   this.secretTour = true;
   this.slug = slugify(this.name, { lower: true });
   next();
@@ -144,12 +144,18 @@ TourSchema.pre('save', function (next) {
 
 //Query Middleware
 // Pre - Query Middleware
-TourSchema.pre(/^find/, function (next) {
-  this.find({ secretTour: { $ne: true } });
-  next();
-});
 
-TourSchema.pre(/^find/, function (next) {
+// We are trying to get all the tours which are not secret immediately -
+// How ever ,no tour is a secret tour, so i would comment this code out
+
+// tourSchema.pre(/^find/, function (next) {
+//   this.find({ secretTour: { $ne: true } });
+//   this.start = Date.now();
+//   next();
+// });
+
+// Populate the tour with guide
+tourSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'guides',
     select: '-__v -passwordChangedAt',
@@ -163,10 +169,11 @@ TourSchema.pre(/^find/, function (next) {
 // Aggregation MiddleWare
 
 // Pre - Hook
-TourSchema.pre('aggregate', function (next) {
+tourSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({
     $match: { secretTour: { $ne: true } },
   });
   next();
 });
-module.exports = mongoose.model('Tours', TourSchema);
+
+module.exports = mongoose.model('tours', tourSchema);
