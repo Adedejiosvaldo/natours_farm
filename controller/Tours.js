@@ -1,4 +1,5 @@
-const Tour = require('../model/Tours');
+
+const Tours = require('../model/Tours');
 const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
 const catchAsyncErrors = require('../utils/catchAsync');
@@ -13,14 +14,14 @@ const aliasTopTours = async (req, res, next) => {
 };
 
 const getAllTours = catchAsyncErrors(async (req, res, next) => {
-  const features = new APIFeatures(Tour.find(), req.query)
+  const features = new APIFeatures(Tours.find(), req.query)
     .filter()
     .sort()
     .limitFields()
     .Pagination();
   //   await the query - response
   const allTours = await features.query;
-  //   console.log(Tour.find().find());
+  console.log(allTours);
   //Send back response
   res.status(200).json({
     status: 'Success',
@@ -41,7 +42,7 @@ const getAllTours = catchAsyncErrors(async (req, res, next) => {
 });
 
 const createTour = catchAsyncErrors(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
+  const newTour = await Tours.create(req.body);
 
   res.status(200).json({
     status: 'Success',
@@ -51,13 +52,13 @@ const createTour = catchAsyncErrors(async (req, res, next) => {
 
 const getATour = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
-  const tour = await Tour.findById(id);
+  const Tour = await Tours.findById(id);
 
-  if (!tour) {
+  if (!Tour) {
     // res.status(404).json({ status: 'Success', data: 'No Tour Found' });
     return next(new AppError('No Tour found with that id', 404));
   }
-  res.status(200).json({ status: 'Success', data: tour });
+  res.status(200).json({ status: 'Success', data: Tour });
 });
 
 const updateTour = catchAsyncErrors(async (req, res, next) => {

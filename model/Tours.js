@@ -176,4 +176,4 @@ tourSchema.pre('aggregate', function (next) {
   next();
 });
 
-module.exports = mongoose.model('tours', tourSchema);
+module.exports = mongoose.model('Tours', tourSchema);

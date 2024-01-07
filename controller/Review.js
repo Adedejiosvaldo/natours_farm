@@ -3,28 +3,19 @@ const Reviews = require('../model/reviewModel');
 const catchAsyncErrors = require('../utils/catchAsync');
 
 const getAllReviews = catchAsyncErrors(async (req, res, next) => {
-  //   const reviews = await Reviews.find();
+  const reviews = await Reviews.find();
 
-  const tour = await Tours.find();
+  if (reviews.length === 0) {
+    return res.status(200).json({
+      status: 'sucess',
+      message: 'No Review so far',
+    });
+  }
   res.status(200).json({
-    status: 'Success',
-    noOfTours: tour.length,
-    data: {
-      tour,
-    },
+    status: 'sucess',
+    count: reviews.length,
+    data: { reviews },
   });
-
-  //   if (reviews.length === 0) {
-  //     return res.status(200).json({
-  //       status: 'sucess',
-  //       message: 'No Review so far',
-  //     });
-  //   }
-  //   res.status(200).json({
-  //     status: 'sucess',
-  //     count: reviews.length,
-  //     data: { reviews },
-  //   });
 });
 
 const createNewReview = catchAsyncErrors(async (req, res, next) => {
