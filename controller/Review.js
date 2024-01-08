@@ -1,7 +1,7 @@
 const Tours = require('../model/Tours');
 const Reviews = require('../model/reviewModel');
 const catchAsyncErrors = require('../utils/catchAsync');
-const { deleteOne } = require('./handlerControllers');
+const { deleteOne, updateOne, createOne } = require('./handlerControllers');
 
 const getAllReviews = catchAsyncErrors(async (req, res, next) => {
   // Checks if it recives any req.params.tourId - If yes
@@ -26,20 +26,42 @@ const getAllReviews = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-const createNewReview = catchAsyncErrors(async (req, res, next) => {
+const setTourAndUserID = (req, res, next) => {
   // get tour id
   if (!req.body.tour) req.body.tour = req.params.tourId;
   // get user id
   if (!req.body.user) req.body.user = req.user._id;
 
-  const newTour = await Reviews.create(req.body);
+  next();
+};
 
-  res.status(200).json({
-    status: 'success',
-    data: { newTour },
-  });
-});
+// Before Factory Function
+// ->
+
+// const createNewReview = catchAsyncErrors(async (req, res, next) => {
+//   // get tour id
+//   if (!req.body.tour) req.body.tour = req.params.tourId;
+//   // get user id
+//   if (!req.body.user) req.body.user = req.user._id;
+//   const newTour = await Reviews.create(req.body);
+
+//   res.status(200).json({
+//     status: 'success',
+//     data: { newTour },
+//   });
+// });
+
+// After Factory Function
+// ->
+const createNewReview = createOne(Reviews);
+const updateReview = updateOne(Reviews);
 
 const deleteReview = deleteOne(Reviews);
 
-module.exports = { getAllReviews, createNewReview, deleteReview };
+module.exports = {
+  getAllReviews,
+  createNewReview,
+  deleteReview,
+  updateReview,
+  setTourAndUserID,
+};

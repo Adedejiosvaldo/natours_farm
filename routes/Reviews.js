@@ -3,6 +3,8 @@ const {
   getAllReviews,
   createNewReview,
   deleteReview,
+  updateReview,
+  setTourAndUserID,
 } = require('../controller/Review');
 const {
   protectMiddleWare,
@@ -14,8 +16,13 @@ const router = express.Router({ mergeParams: true });
 router
   .route('/')
   .get(getAllReviews)
-  .post(protectMiddleWare, restrictTo('user'), createNewReview);
+  .post(
+    protectMiddleWare,
+    restrictTo('user'),
+    setTourAndUserID,
+    createNewReview,
+  );
 
-router.route('/:id').delete(deleteReview);
+router.route('/:id').delete(deleteReview).patch(updateReview);
 
 module.exports = router;

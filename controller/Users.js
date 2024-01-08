@@ -2,7 +2,7 @@ const fs = require('fs');
 const User = require('../model/User');
 const catchAsyncErrors = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const { deleteOne } = require('./handlerControllers');
+const { deleteOne, updateOne } = require('./handlerControllers');
 
 const UsersData = JSON.parse(fs.readFileSync('./dev-data/data/users.json'));
 
@@ -55,7 +55,6 @@ const updateMe = catchAsyncErrors(async (req, res, next) => {
 
 const deleteMe = catchAsyncErrors(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
-
   res.status(204).json({
     status: 'success',
     data: null,
@@ -85,26 +84,10 @@ const getAUser = async (req, res) => {
   });
 };
 
-const updateUser = async (req, res) => {
-  const {
-    params: { id },
-    body,
-  } = req;
-  c;
+// Only for administrators
 
-  const user = UsersData.find((el) => el.id === parseInt(id));
-
-  if (!user) {
-    return res.status(400).json({
-      staus: 'Error',
-      data: {
-        message: 'ID does not exist',
-      },
-    });
-  }
-};
-
-// const deleteUser = async (req, res) => {};
+// Do Not Attempt to changePasswordWithThis
+const updateUser = updateOne(User); // Use Auth controller to changePasssword
 const deleteUser = deleteOne(User);
 
 module.exports = {
