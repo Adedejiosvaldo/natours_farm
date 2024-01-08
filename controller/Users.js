@@ -65,6 +65,10 @@ const deleteMe = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+const getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
 // const getAUser = async (req, res) => {
 //   const { id } = req.params;
 
@@ -104,4 +108,5 @@ module.exports = {
 
   updateMe,
   deleteMe,
+  getMe,
 };

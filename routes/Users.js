@@ -7,6 +7,7 @@ const {
   deleteUser,
   updateMe,
   deleteMe,
+  getMe,
 } = require('../controller/Users');
 
 const {
@@ -18,6 +19,7 @@ const {
   protectMiddleWare,
   restrictTo,
 } = require('../controller/authController');
+const { getOne } = require('../controller/handlerControllers');
 
 const router = express.Router();
 
@@ -34,6 +36,7 @@ router.patch('/resetPassword/:token', resetPassword);
 router.patch('/updateUserData', protectMiddleWare, updateMe);
 router.delete('/deleteMe', protectMiddleWare, deleteMe);
 //User ROute
+router.route('/me').get(protectMiddleWare, getMe, getAUser);
 
 router.route('/').get(getAllUsers);
 
