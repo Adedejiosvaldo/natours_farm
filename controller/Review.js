@@ -3,7 +3,13 @@ const Reviews = require('../model/reviewModel');
 const catchAsyncErrors = require('../utils/catchAsync');
 
 const getAllReviews = catchAsyncErrors(async (req, res, next) => {
-  const reviews = await Reviews.find();
+  // Checks if it receives any req.params.tourId - If yes
+  // It creates object that the Review finds and sends back as the response (Almost like FIndById)
+  let filter = {};
+  if (req.params.tourId) filter = { tour: req.params.tourId };
+
+  //   If no req.params.tourId -> It fetches the full reviews
+  const reviews = await Reviews.find(filter);
 
   if (reviews.length === 0) {
     return res.status(200).json({
@@ -11,6 +17,7 @@ const getAllReviews = catchAsyncErrors(async (req, res, next) => {
       message: 'No Review so far',
     });
   }
+
   res.status(200).json({
     status: 'sucess',
     count: reviews.length,
