@@ -2,6 +2,7 @@ const fs = require('fs');
 const User = require('../model/User');
 const catchAsyncErrors = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const { deleteOne } = require('./handlerControllers');
 
 const UsersData = JSON.parse(fs.readFileSync('./dev-data/data/users.json'));
 
@@ -103,13 +104,15 @@ const updateUser = async (req, res) => {
   }
 };
 
-const deleteUser = async (req, res) => {};
+// const deleteUser = async (req, res) => {};
+const deleteUser = deleteOne(User);
 
 module.exports = {
   getAUser,
   getAllUsers,
   updateUser,
-  updateMe,
   deleteUser,
+
+  updateMe,
   deleteMe,
 };

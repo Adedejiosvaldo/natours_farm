@@ -1,9 +1,10 @@
 const Tours = require('../model/Tours');
 const Reviews = require('../model/reviewModel');
 const catchAsyncErrors = require('../utils/catchAsync');
+const { deleteOne } = require('./handlerControllers');
 
 const getAllReviews = catchAsyncErrors(async (req, res, next) => {
-  // Checks if it receives any req.params.tourId - If yes
+  // Checks if it recives any req.params.tourId - If yes
   // It creates object that the Review finds and sends back as the response (Almost like FIndById)
   let filter = {};
   if (req.params.tourId) filter = { tour: req.params.tourId };
@@ -39,4 +40,6 @@ const createNewReview = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-module.exports = { getAllReviews, createNewReview };
+const deleteReview = deleteOne(Reviews);
+
+module.exports = { getAllReviews, createNewReview, deleteReview };

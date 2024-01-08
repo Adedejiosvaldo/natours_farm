@@ -1,5 +1,9 @@
 const express = require('express');
-const { getAllReviews, createNewReview } = require('../controller/Review');
+const {
+  getAllReviews,
+  createNewReview,
+  deleteReview,
+} = require('../controller/Review');
 const {
   protectMiddleWare,
   restrictTo,
@@ -11,5 +15,7 @@ router
   .route('/')
   .get(getAllReviews)
   .post(protectMiddleWare, restrictTo('user'), createNewReview);
+
+router.route('/:id').delete(deleteReview);
 
 module.exports = router;

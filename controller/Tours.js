@@ -2,7 +2,7 @@ const Tours = require('../model/Tours');
 const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
 const catchAsyncErrors = require('../utils/catchAsync');
-
+const { deleteOne } = require('./handlerControllers');
 //Controllers
 
 const aliasTopTours = async (req, res, next) => {
@@ -63,19 +63,23 @@ const updateTour = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({ status: 'Success', data: { tour } });
 });
 
-const deleteTour = catchAsyncErrors(async (req, res, next) => {
-  const { id } = req.params;
-  const tour = await Tours.findByIdAndDelete(id);
+// const deleteTour = catchAsyncErrors(async (req, res, next) => {
+//   const { id } = req.params;
+//   const tour = await Tours.findByIdAndDelete(id);
 
-  if (!tour) {
-    // res.status(404).json({ status: 'Sucess', data: 'No Tour Found' });
-    return next(new AppError('No Tour found with that id', 404));
-  }
-  res.status(200).json({
-    status: 'Success',
-    msg: `Successfully deleted tour with ID ${id}`,
-  });
-});
+//   if (!tour) {
+//     // res.status(404).json({ status: 'Sucess', data: 'No Tour Found' });
+//     return next(new AppError('No Tour found with that id', 404));
+//   }
+//   res.status(200).json({
+//     status: 'Success',
+//     msg: `Successfully deleted tour with ID ${id}`,
+
+//   });
+// });
+
+// ->
+const deleteTour = deleteOne(Tours);
 
 const getTourStats = catchAsyncErrors(async (req, res) => {
   const stats = await Tours.aggregate([

@@ -8,6 +8,7 @@ const {
   updateMe,
   deleteMe,
 } = require('../controller/Users');
+
 const {
   signUp,
   login,
@@ -15,6 +16,7 @@ const {
   resetPassword,
   updatePassword,
   protectMiddleWare,
+  restrictTo,
 } = require('../controller/authController');
 
 const router = express.Router();
@@ -34,6 +36,7 @@ router.delete('/deleteMe', protectMiddleWare, deleteMe);
 //User ROute
 
 router.route('/').get(getAllUsers);
+
 router.route('/:id').get(getAUser).patch(updateUser).delete(deleteUser);
 
 module.exports = router;
