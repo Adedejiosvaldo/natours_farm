@@ -1,4 +1,3 @@
-
 const Tours = require('../model/Tours');
 const APIFeatures = require('../utils/apiFeatures');
 const AppError = require('../utils/appError');
@@ -21,7 +20,6 @@ const getAllTours = catchAsyncErrors(async (req, res, next) => {
     .Pagination();
   //   await the query - response
   const allTours = await features.query;
-  console.log(allTours);
   //Send back response
   res.status(200).json({
     status: 'Success',
@@ -30,15 +28,6 @@ const getAllTours = catchAsyncErrors(async (req, res, next) => {
       allTours,
     },
   });
-
-  //   const tour = await Tours.find();
-  //   res.status(200).json({
-  //     status: 'Success',
-  //     noOfTours: tour.length,
-  //     data: {
-  //       tour,
-  //     },
-  //   });
 });
 
 const createTour = catchAsyncErrors(async (req, res, next) => {
@@ -52,7 +41,7 @@ const createTour = catchAsyncErrors(async (req, res, next) => {
 
 const getATour = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
-  const Tour = await Tours.findById(id);
+  const Tour = await Tours.findById(id).populate('reviews');
 
   if (!Tour) {
     // res.status(404).json({ status: 'Success', data: 'No Tour Found' });
