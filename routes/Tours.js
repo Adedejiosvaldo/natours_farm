@@ -15,22 +15,31 @@ const {
   protectMiddleWare,
   restrictTo,
 } = require('../controller/authController');
-const { getAllReviews, createNewReview } = require('../controller/Review');
 
 const router = express.Router();
 
 router.use('/:tourId/reviews', reviewRouter);
 
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
-router.route('/monthly-plan/:year').get(getMonthlyPlan);
+router
+  .route('/monthly-plan/:year')
+  .get(
+    protectMiddleWare,
+    restrictTo('admin', 'lead-guide', 'guide'),
+    getMonthlyPlan,
+  );
 
 router.route('/tour-stats').get(getTourStats);
 
-router.route('/').get(getAllTours).post(createTour);
+router
+  .route('/')
+  .get(getAllTours)
+  .post(protectMiddleWare, restrictTo('admin', 'lead-guide'), createTour);
+
 router
   .route('/:id')
-  .get( getATour)
-  .patch(updateTour)
+  .get(getATour)
+  .patch(protectMiddleWare, restrictTo('admin', 'lead-guide'), updateTour)
   .delete(protectMiddleWare, restrictTo('admin', 'lead-guide'), deleteTour);
 
 module.exports = router;
