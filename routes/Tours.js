@@ -29,7 +29,7 @@ router.route('/tour-stats').get(getTourStats);
 router.route('/').get(getAllTours).post(createTour);
 router
   .route('/:id')
-  .get(protectMiddleWare, restrictTo('user'), getATour)
+  .get( getATour)
   .patch(updateTour)
   .delete(protectMiddleWare, restrictTo('admin', 'lead-guide'), deleteTour);
 

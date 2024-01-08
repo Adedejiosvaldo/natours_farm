@@ -1,10 +1,12 @@
-const fs = require('fs');
 const User = require('../model/User');
 const catchAsyncErrors = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const { deleteOne, updateOne } = require('./handlerControllers');
-
-const UsersData = JSON.parse(fs.readFileSync('./dev-data/data/users.json'));
+const {
+  deleteOne,
+  updateOne,
+  getOne,
+  getAll,
+} = require('./handlerControllers');
 
 const filteredObject = (obj, ...allowedFields) => {
   const newObj = {};
@@ -16,21 +18,23 @@ const filteredObject = (obj, ...allowedFields) => {
   return newObj;
 };
 
-const getAllUsers = catchAsyncErrors(async (req, res, next) => {
-  const users = await User.find().select('-password');
+// const getAllUsers = catchAsyncErrors(async (req, res, next) => {
+//   const users = await User.find().select('-password');
 
-  if (!users) {
-    return next(new AppError('No user found', 404));
-  }
+//   if (!users) {
+//     return next(new AppError('No user found', 404));
+//   }
 
-  res.status(200).json({
-    status: 'success',
-    result: users.length,
-    data: {
-      users,
-    },
-  });
-});
+//   res.status(200).json({
+//     status: 'success',
+//     result: users.length,
+//     data: {
+//       users,
+//     },
+//   });
+// });
+
+const getAllUsers = getAll(User);
 
 const updateMe = catchAsyncErrors(async (req, res, next) => {
   // 1- Create error if user tries to update Password (POST PASSWORD DATA)
@@ -61,28 +65,30 @@ const deleteMe = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-const getAUser = async (req, res) => {
-  const { id } = req.params;
+// const getAUser = async (req, res) => {
+//   const { id } = req.params;
 
-  //   console.log(id);
-  const user = await User.findById(id);
+//   //   console.log(id);
+//   const user = await User.findById(id);
 
-  if (!user) {
-    return res.status(400).json({
-      staus: 'Error',
-      data: {
-        message: 'ID does not exist',
-      },
-    });
-  }
+//   if (!user) {
+//     return res.status(400).json({
+//       staus: 'Error',
+//       data: {
+//         message: 'ID does not exist',
+//       },
+//     });
+//   }
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      user: user,
-    },
-  });
-};
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       user: user,
+//     },
+//   });
+// };
+
+const getAUser = getOne(User);
 
 // Only for administrators
 

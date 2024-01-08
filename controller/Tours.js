@@ -1,8 +1,12 @@
 const Tours = require('../model/Tours');
-const APIFeatures = require('../utils/apiFeatures');
-const AppError = require('../utils/appError');
 const catchAsyncErrors = require('../utils/catchAsync');
-const { deleteOne, updateOne, createOne } = require('./handlerControllers');
+const {
+  deleteOne,
+  updateOne,
+  createOne,
+  getOne,
+  getAll,
+} = require('./handlerControllers');
 //Controllers
 
 const aliasTopTours = async (req, res, next) => {
@@ -12,23 +16,27 @@ const aliasTopTours = async (req, res, next) => {
   next();
 };
 
-const getAllTours = catchAsyncErrors(async (req, res, next) => {
-  const features = new APIFeatures(Tours.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .Pagination();
-  //   await the query - response
-  const allTours = await features.query;
-  //Send back response
-  res.status(200).json({
-    status: 'Success',
-    noOfTours: allTours.length,
-    data: {
-      allTours,
-    },
-  });
-});
+// Before Factory Function
+// ->
+// const getAllTours = catchAsyncErrors(async (req, res, next) => {
+//   const features = new APIFeatures(Tours.find(), req.query)
+//     .filter()
+//     .sort()
+//     .limitFields()
+//     .Pagination();
+//   //   await the query - response
+//   const allTours = await features.query;
+//   //Send back response
+//   res.status(200).json({
+//     status: 'Success',
+//     noOfTours: allTours.length,
+//     data: {
+//       allTours,
+//     },
+//   });
+// });
+
+const getAllTours = getAll(Tours);
 
 // Before Factory Function
 // ->
@@ -45,16 +53,18 @@ const getAllTours = catchAsyncErrors(async (req, res, next) => {
 // ->
 const createTour = createOne(Tours);
 
-const getATour = catchAsyncErrors(async (req, res, next) => {
-  const { id } = req.params;
-  const Tour = await Tours.findById(id).populate('reviews');
+// const getATour = catchAsyncErrors(async (req, res, next) => {
+//   const { id } = req.params;
+//   const Tour = await Tours.findById(id).populate('reviews');
 
-  if (!Tour) {
-    // res.status(404).json({ status: 'Success', data: 'No Tour Found' });
-    return next(new AppError('No Tour found with that id', 404));
-  }
-  res.status(200).json({ status: 'Success', data: Tour });
-});
+//   if (!Tour) {
+//     // res.status(404).json({ status: 'Success', data: 'No Tour Found' });
+//     return next(new AppError('No Tour found with that id', 404));
+//   }
+//   res.status(200).json({ status: 'Success', data: Tour });
+// });
+
+const getATour = getOne(Tours, 'reviews');
 
 // Before Factory Function
 // ->
@@ -96,6 +106,7 @@ const updateTour = updateOne(Tours);
 // ->
 const deleteTour = deleteOne(Tours);
 
+// Aggregate
 const getTourStats = catchAsyncErrors(async (req, res) => {
   const stats = await Tours.aggregate([
     {

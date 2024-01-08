@@ -5,6 +5,7 @@ const {
   deleteReview,
   updateReview,
   setTourAndUserID,
+  getAReview,
 } = require('../controller/Review');
 const {
   protectMiddleWare,
@@ -23,6 +24,6 @@ router
     createNewReview,
   );
 
-router.route('/:id').delete(deleteReview).patch(updateReview);
+router.route('/:id').delete(deleteReview).patch(updateReview).get(getAReview);
 
 module.exports = router;

@@ -91,8 +91,9 @@ class APIFeatures {
 
   limitFields() {
     //C- Field Limiting
-    if (this.query.fields) {
-      const fields = this.query.fields.split(',').join(' ');
+    console.log(this.query.fields);
+    if (this.queryString.fields) {
+      const fields = this.queryString.fields.split(',').join(' ');
       this.query = this.query.select(fields);
     } else {
       this.query = this.query.select('-__v');
@@ -100,10 +101,10 @@ class APIFeatures {
     return this;
   }
 
-  Pagination() {
+  pagination() {
     // D- Pagination
-    const page = this.query.page * 1 || 1;
-    const limit = this.query.limit * 1 || 100;
+    const page = this.queryString.page * 1 || 1;
+    const limit = this.queryString.limit * 1 || 100;
     const skip = (page - 1) * limit;
 
     this.query = this.query.skip(skip).limit(limit);

@@ -1,30 +1,39 @@
-const Tours = require('../model/Tours');
 const Reviews = require('../model/reviewModel');
 const catchAsyncErrors = require('../utils/catchAsync');
-const { deleteOne, updateOne, createOne } = require('./handlerControllers');
+const {
+  deleteOne,
+  updateOne,
+  createOne,
+  getOne,
+  getAll,
+} = require('./handlerControllers');
 
-const getAllReviews = catchAsyncErrors(async (req, res, next) => {
-  // Checks if it recives any req.params.tourId - If yes
-  // It creates object that the Review finds and sends back as the response (Almost like FIndById)
-  let filter = {};
-  if (req.params.tourId) filter = { tour: req.params.tourId };
+// const getAllReviews = catchAsyncErrors(async (req, res, next) => {
+//   // Checks if it recives any req.params.tourId - If yes
+//   // It creates object that the Review finds and sends back as the response (Almost like FIndById)
+//   let filter = {};
+//   if (req.params.tourId) filter = { tour: req.params.tourId };
 
-  //   If no req.params.tourId -> It fetches the full reviews
-  const reviews = await Reviews.find(filter);
+//   //   If no req.params.tourId -> It fetches the full reviews
+//   const reviews = await Reviews.find(filter);
 
-  if (reviews.length === 0) {
-    return res.status(200).json({
-      status: 'sucess',
-      message: 'No Review so far',
-    });
-  }
+//   if (reviews.length === 0) {
+//     return res.status(200).json({
+//       status: 'sucess',
+//       message: 'No Review so far',
+//     });
+//   }
 
-  res.status(200).json({
-    status: 'sucess',
-    count: reviews.length,
-    data: { reviews },
-  });
-});
+//   res.status(200).json({
+//     status: 'sucess',
+//     count: reviews.length,
+//     data: { reviews },
+//   });
+// });
+
+const getAllReviews = getAll(Reviews);
+
+const getAReview = getOne(Reviews);
 
 const setTourAndUserID = (req, res, next) => {
   // get tour id
@@ -60,6 +69,7 @@ const deleteReview = deleteOne(Reviews);
 
 module.exports = {
   getAllReviews,
+  getAReview,
   createNewReview,
   deleteReview,
   updateReview,
