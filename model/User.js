@@ -25,7 +25,7 @@ const UserSchema = mongoose.Schema({
     default: 'user',
     enum: {
       values: ['user', 'admin', 'guide', 'lead-guide'],
-      message: 'Difficulty can either be : user,admin, guide,lead-guide',
+      message: 'roles can either be : user,admin, guide,lead-guide',
     },
   },
 
