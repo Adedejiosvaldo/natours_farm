@@ -91,7 +91,6 @@ class APIFeatures {
 
   limitFields() {
     //C- Field Limiting
-    console.log(this.query.fields);
     if (this.queryString.fields) {
       const fields = this.queryString.fields.split(',').join(' ');
       this.query = this.query.select(fields);

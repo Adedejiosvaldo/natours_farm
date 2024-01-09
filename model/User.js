@@ -59,24 +59,24 @@ const UserSchema = mongoose.Schema({
 });
 
 // Middleware
-UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
+// UserSchema.pre('save', async function (next) {
+//   if (!this.isModified('password')) return next();
 
-  //hash password with cost of 12
-  this.password = await bcrypt.hash(this.password, 12);
+//   //hash password with cost of 12
+//   this.password = await bcrypt.hash(this.password, 12);
 
-  //Remove the confirm password
-  this.confirmPassword = undefined;
-  next();
-});
+//   //Remove the confirm password
+//   this.confirmPassword = undefined;
+//   next();
+// });
 
-UserSchema.pre('save', function (next) {
-  if (!this.isModified('password') || this.isNew) {
-    return next();
-  }
-  this.passwordChangedAt = Date.now() - 1000;
-  next();
-});
+// UserSchema.pre('save', function (next) {
+//   if (!this.isModified('password') || this.isNew) {
+//     return next();
+//   }
+//   this.passwordChangedAt = Date.now() - 1000;
+//   next();
+// });
 
 UserSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: false } });
