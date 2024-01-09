@@ -64,15 +64,37 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
       },
     },
   ]);
-  await Tours.findByIdAndUpdate(tourId, {
-    ratingQuantity: stats[0].nRatings,
-    ratingsAverage: stats[0].avgRating,
-  });
+
+  if (stats.lenght > 0) {
+    await Tours.findByIdAndUpdate(tourId, {
+      ratingQuantity: stats[0].nRatings,
+      ratingsAverage: stats[0].avgRating,
+    });
+  } else {
+    await Tours.findByIdAndUpdate(tourId, {
+      ratingQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
 };
 
 // The POST middleware does not have access to next
 reviewSchema.post('save', function () {
   this.constructor.calcAverageRatings(this.tour);
+});
+
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  // THe update and delete cant be carried out here as it would not be saved and persisted
+
+  // Copies the current model and saves it to r to be accessed later
+  this.r = await this.clone().findOne();
+
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  // After whatever operations was carried out on the review, it used the remaining doc to carry out the calculation of the avaerage rating
+  await this.r.constructor.calcAverageRatings(this.r.tour);
 });
 
 const Review = mongoose.model('Review', reviewSchema);
