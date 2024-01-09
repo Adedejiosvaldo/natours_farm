@@ -32,6 +32,8 @@ const tourSchema = mongoose.Schema(
       default: 4.5,
       min: [1, 'Ratings must be above 1.0'],
       max: [5, 'Rating must be above 5.0'],
+      //   setter function - a call back function that returns a value and returns a value
+      set: (val) => Math.round(val * 10) / 10,
     },
 
     ratingQuantity: {
@@ -120,6 +122,7 @@ const tourSchema = mongoose.Schema(
 // Single value index
 // tourSchema.index({ price: 1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 // Compound index
 tourSchema.index({ price: 1, ratingsAverage: -1 });
