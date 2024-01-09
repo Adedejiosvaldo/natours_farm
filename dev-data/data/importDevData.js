@@ -19,8 +19,8 @@ const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'));
 // IMport Data into DB
 const importData = async () => {
   try {
-    // await Tours.create(tours);
-    await User.create(users, { validateBeforeSave: false });
+    await Tours.create(tours);
+    // await User.create(users, { validateBeforeSave: false });
     // await reviewModel.create(reviews);
     console.log('Data success');
   } catch (error) {
@@ -31,8 +31,8 @@ const importData = async () => {
 
 const deleteAllData = async () => {
   try {
-    // await Tours.deleteMany();
-    await User.deleteMany();
+    await Tours.deleteMany();
+    // await User.deleteMany();
     // await reviewModel.deleteMany();
     console.log('Data Deleted');
   } catch (error) {

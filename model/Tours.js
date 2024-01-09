@@ -186,11 +186,14 @@ tourSchema.pre(/^find/, function (next) {
 // Aggregation MiddleWare
 
 // Pre - Hook
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({
-    $match: { secretTour: { $ne: true } },
-  });
-  next();
-});
+
+// We could write a code that where if the first stage is $geoNear - It should not run
+// or - Just comment em out
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({
+//     $match: { secretTour: { $ne: true } },
+//   });
+//   next();
+// });
 
 module.exports = mongoose.model('Tours', tourSchema);
