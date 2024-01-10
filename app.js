@@ -7,6 +7,8 @@ const rateLimiter = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const path = require('path');
+
 const app = express();
 const TourRoutes = require('./routes/Tours');
 const UserRoutes = require('./routes/Users');
@@ -15,7 +17,13 @@ const AppError = require('./utils/appError');
 const errorController = require('./controller/errorController');
 const ReviewRoutes = require('./routes/Reviews');
 
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 //Middlewares
+
+// Serving Static Files
+app.use(express.static(path.join(__dirname, 'public')));
 
 //  Set Security HTTP Headers
 app.use(helmet());
@@ -55,10 +63,11 @@ app.use(
   }),
 );
 
-// Serving Static Files
-app.use(express.static(`${__dirname}/public`));
-
 //Routes
+app.get('/', (req, res) => {
+  res.status(200).render('base', { tour: 'Trip to akure', user: 'Bimbo' });
+});
+
 app.use('/api/v1/tours', TourRoutes);
 app.use('/api/v1/users', UserRoutes);
 app.use('/api/v1/reviews', ReviewRoutes);
